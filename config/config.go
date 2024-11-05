@@ -4,8 +4,10 @@ import "time"
 
 // Config 包含应用的配置信息
 type Config struct {
+	// token的过期时间
 	TokenExpiration time.Duration
-	SecretKey       string
+	// token密钥
+	SecretKey string
 }
 
 var AppConfig = Config{

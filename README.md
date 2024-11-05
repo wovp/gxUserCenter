@@ -11,9 +11,6 @@
 5. 若所需的数据库表不存在，会自动创建。
 
 ## 三、安装步骤
-1. 确保你的系统上安装了 Go 语言。你可以从[Go 官方网站](https://golang.org/dl/)下载 Go。
-2. 安装 Go 的 MySQL 驱动，在项目中导入 `_ "github.com/go-sql-driver/mysql"`。
-3. 设置一个 MySQL 数据库，并在代码中的`connectDB`函数里配置连接细节。
 
 ## 四、使用方法
 1. 运行`main.go`文件来启动应用程序。
