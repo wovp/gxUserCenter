@@ -33,7 +33,8 @@ func M() {
 	inputUsername := "test1"
 	inputPassword := "test1"
 	user := gxmodule.User{Username: inputUsername, Password: inputPassword}
-	if user.Authenticate(db) {
+	_, authenticated := user.Authenticate(db)
+	if authenticated {
 		fmt.Println("登录成功！")
 	} else {
 		fmt.Println("登录失败！")

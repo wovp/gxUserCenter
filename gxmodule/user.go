@@ -3,7 +3,9 @@ package gxmodule
 import (
 	"database/sql"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	_ "github.com/go-sql-driver/mysql"
+	"goUserCenter/config"
 	"time"
 )
 
@@ -76,24 +78,6 @@ func (u *User) Validate() error {
 	return nil
 }
 
-// Authenticate Authenticate验证用户登录信息
-func (u *User) Authenticate(db *sql.DB) bool {
-	query := "SELECT id, username, password, email, created_at, updated_at, is_active FROM users WHERE username =? AND password =?"
-	row := db.QueryRow(query, u.Username, u.Password)
-
-	var storedUser User
-	err := row.Scan(&storedUser.ID, &storedUser.Username, &storedUser.Password, &storedUser.Email, &storedUser.CreatedAt, &storedUser.UpdatedAt, &storedUser.IsActive)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return false
-		}
-		// 这里可以添加更详细的错误处理，比如记录日志等
-		return false
-	}
-
-	return true
-}
-
 // Update Update更新用户信息
 func (u *User) Update(db *sql.DB) error {
 	query := "UPDATE users SET username =?, password =?, email =?, updated_at =? WHERE id =?"
@@ -115,6 +99,34 @@ func (u *User) ToggleActivity(db *sql.DB) error {
 	}
 
 	return nil
+}
+
+// Authenticate验证用户登录信息并生成 JWT token
+func (u *User) Authenticate(db *sql.DB) (string, bool) {
+	query := "SELECT id, username, password, email, created_at, updated_at, is_active FROM users WHERE username =? AND password =?"
+	row := db.QueryRow(query, u.Username, u.Password)
+
+	var storedUser User
+	err := row.Scan(&storedUser.ID, &storedUser.Username, &storedUser.Password, &storedUser.Email, &storedUser.CreatedAt, &storedUser.UpdatedAt, &storedUser.IsActive)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", false
+		}
+		return "", false
+	}
+
+	// 如果登录成功，生成 JWT token
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id": storedUser.ID,
+		"exp":     time.Now().Add(config.AppConfig.TokenExpiration).Unix(),
+	})
+
+	tokenString, err := token.SignedString([]byte(config.AppConfig.SecretKey))
+	if err != nil {
+		return "", false
+	}
+
+	return tokenString, true
 }
 
 // CreateTable 创建用户表
