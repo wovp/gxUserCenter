@@ -18,13 +18,21 @@ func SetupRoutes(db *sql.DB) *gin.Engine {
 	router.POST("/login", service.LoginHandler(db))
 
 	// 需要认证的路由，添加JWT验证中间件
-	authenticatedRoutes := router.Group("/")
+	authenticatedRoutes := router.Group("/user")
 	authenticatedRoutes.Use(middle.AuthMiddleware())
 
 	// 示例：返回 "Hello, World!" 的路由，需登录后访问
 	authenticatedRoutes.GET("/hello", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": "Hello, World!"})
 	})
+	userQuery := authenticatedRoutes.Group("/query")
+	userUpdate := authenticatedRoutes.Group("/update")
+
+	// 获取用户详细信息路由
+	userQuery.GET("/user_detail", service.GetUserDetailHandler(db))
+
+	// 更新用户详细信息路由
+	userUpdate.POST("/user_detail", service.UpdateUserDetailHandler(db))
 
 	return router
 }

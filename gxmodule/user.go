@@ -143,5 +143,22 @@ func (u *User) CreateTable(db *sql.DB) error {
     );
     `
 	_, err := db.Exec(createUserTableSQL)
+	createUserDetailTableSQL := `
+    CREATE TABLE IF NOT EXISTS user_details (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NOT NULL,
+        full_name VARCHAR(255),
+        phone_number VARCHAR(255),
+        address VARCHAR(255),
+        date_of_birth DATIME,
+        gender VARCHAR(10),
+        occupation VARCHAR(255),
+        avatar VARCHAR(255),
+        bio VARCHAR(255),
+        school VARCHAR(255),
+        FOREIGN KEY (user_id) REFERENCES users(id)
+    );
+    `
+	_, err = db.Exec(createUserDetailTableSQL)
 	return err
 }
