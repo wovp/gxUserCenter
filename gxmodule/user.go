@@ -162,3 +162,20 @@ func (u *User) CreateTable(db *sql.DB) error {
 	_, err = db.Exec(createUserDetailTableSQL)
 	return err
 }
+
+// GetUserIDByUsername 根据用户名查询用户ID
+func GetUserIDByUsername(db *sql.DB, username string) (int, error) {
+	query := "SELECT id FROM users WHERE username =?"
+	row := db.QueryRow(query, username)
+
+	var userID int
+	err := row.Scan(&userID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return 0, fmt.Errorf("找不到指定用户名的用户")
+		}
+		return 0, err
+	}
+
+	return userID, nil
+}

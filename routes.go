@@ -34,5 +34,18 @@ func SetupRoutes(db *sql.DB) *gin.Engine {
 	// 更新用户详细信息路由
 	userUpdate.POST("/user_detail", service.UpdateUserDetailHandler(db))
 
+	friend := authenticatedRoutes.Group("/friend")
+	// 添加好友路由（发送好友请求）
+	friend.POST("/add_friend", service.SendFriendRequestHandler(db))
+
+	// 同意好友请求路由
+	friend.POST("/accept_friend_request", service.AcceptFriendRequestHandler(db))
+
+	// 获取好友列表路由
+	friend.GET("/get_friend_list", service.GetFriendListHandler(db))
+
+	// 获取待处理好友请求列表路由
+	friend.GET("/get_pending_friend_requests", service.GetPendingFriendRequestsHandler(db))
+
 	return router
 }

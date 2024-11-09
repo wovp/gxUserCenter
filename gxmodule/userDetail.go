@@ -130,7 +130,7 @@ func NewUserDetailRegister(fullName, phoneNumber, address, dateOfBirthStr, gende
 	var err error
 
 	dateOfBirth := defaultDateOfBirth
-	dateOfBirth, err = time.Parse("2000-01-01", dateOfBirthStr)
+	dateOfBirth, err = time.Parse("2006-01-02", dateOfBirthStr)
 	if err != nil {
 		return nil, err
 	}
